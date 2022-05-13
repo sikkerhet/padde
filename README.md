@@ -51,3 +51,7 @@ Query id: 4e669149-6531-4c2c-8b72-9dec7acb820e
 │ github.com │ 140.82.112.3 │ A     │ 1649436366 │ 1649926564 │    18 │
 └────────────┴──────────────┴───────┴────────────┴────────────┴───────┘
 ```
+
+## Diverse
+
+Løsningen kjører på UiO, er testet med feed opp til 30Gb/s. Taylor er multitrådet (teste på 128 cores), og leser >100Gb loggdata på få minutter.

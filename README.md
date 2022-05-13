@@ -8,6 +8,7 @@ Løsningen består foreløpig av tre komponenter.
 * Clickhouse installert lokalt https://clickhouse.com
 * Suricata satt opp til å logge dns hendelser https://suricata.io
 * Taylor (i dette repo), en enkel Go deamon som leser JSON log fra surricata og dytter inn i lokal clickhouse base
+* Clickhouse sørger for å aggregere data i bakgrunnen basert på tabell definisjonen
 
 Dette er en POC, men fungererer og er testet på en probe som har peak opp til 30Gb/s
 

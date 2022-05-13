@@ -27,7 +27,7 @@ $ clickhouse-cli < padde_log.sql
 ```
 3. Kompiler taylor
 ```
-$ CGO_ENABLED=0 go build tayolor.go
+$ CGO_ENABLED=0 go build taylor.go
 ```
 Anbefaler å kompilere på Ubuntu 22.04 el.l. Clickhouse lib. krever nyere Go.
 Binæren kjører på RHEL 8.

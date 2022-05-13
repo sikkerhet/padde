@@ -23,6 +23,7 @@ TODO:
 
 ```
 $ echo "CREATE DATABASE PADDE" | clickhouse-cli
+$ clickhouse-cli < padde_log.sql
 ```
 3. Kompiler taylor
 ```

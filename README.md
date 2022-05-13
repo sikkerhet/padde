@@ -29,6 +29,9 @@ $ clickhouse-cli < padde_log.sql
 ```
 $ CGO_ENABLED=0 go build tayolor.go
 ```
+Anbefaler å kompilere på Ubuntu 22.04 el.l. Clickhouse lib. krever nyere Go.
+Binæren kjører på RHEL 8.
+
 4. Start taylor med rett parametre
 ```
 $ taylor -filename /var/log/surricata/eve-dns.json -skip TXT,DNSKEY

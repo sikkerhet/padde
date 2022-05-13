@@ -43,7 +43,9 @@ func main() {
 
         filename := *config_file
         skipfields := strings.Split(*config_skip, ",")
-
+        
+        // Func to catch kill -USR1
+        // Will print stats to syslog
         c := make(chan os.Signal)
         signal.Notify(c, syscall.SIGUSR1)
         go func() {
@@ -53,6 +55,7 @@ func main() {
                 }
         }()
 
+        // Func to print stats every 10mins to syslog
         go func() {
                 for {
                         time.Sleep(600 * time.Second)

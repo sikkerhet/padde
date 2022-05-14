@@ -64,12 +64,12 @@ func main() {
                 }
         }()
 
-        log.Printf("Started dbwriter\n")
         // Start db writer
+        log.Printf("Started dbwriter\n")
         go dbwriter(dbchan)
 
-        log.Printf("Started reader of logile: %v\n", filename)
         // Start reader loop
+        log.Printf("Started reader of logile: %v\n", filename)
         go filereader(filename, logchannel)
 
         // Wait for new lines on channel
@@ -88,6 +88,7 @@ func main() {
 
 }
 
+// Open logfile in "tail -f" mode, send newlines to channel
 func filereader(filename string, outchan chan string) {
         // Get syslogger to pass to tail.Config
         syslogger := getSysLogger()
@@ -102,6 +103,7 @@ func filereader(filename string, outchan chan string) {
                 for line := range t.Lines {
                         outchan <- string(line.Text)
                 }
+                // Something went wrong! Reopen file?
                 log.Println("taylor t.Lines closed. Trying reopen")
         }
 }
@@ -119,14 +121,17 @@ func parseline(newline string, skipfields []string) {
 
                 // Get time from JSON
                 timestring := gjson.Get(newline, "timestamp").String()
+                // Parse time using string to match surricata logs
                 thetime, err := time.Parse("2006-01-02T15:04:05.99999-0700", timestring)
                 if err != nil {
+                        // Error parsing timestring, inc. errorcounter and return
                         timeparsecount++
                         return
                 }
                 // Convert to int64
                 timestamp := int64(thetime.Unix())
 
+                // Iterate all answers
                 for _, e := range dnsarr {
                         // Get line as string
                         element := e.String()

@@ -1,0 +1,13 @@
+[Unit]
+Description=Passive DNS dbwriter
+After=network-online.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=3
+User=root
+ExecStart=/site/bin/taylor -skip DNSKEY -filename /var/log/suricata/eve-dns.json
+
+[Install]
+WantedBy=multi-user.target

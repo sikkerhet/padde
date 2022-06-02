@@ -24,7 +24,7 @@ var errorcount int64 = 0
 var timeparsecount int64 = 0
 
 func main() {
-        // Set up loging to syslog
+        // Set up logging to syslog
         logwriter, err := syslog.New(syslog.LOG_NOTICE, "taylor")
         if err == nil {
                 log.SetOutput(logwriter)
@@ -75,6 +75,7 @@ func main() {
         // Wait for new lines on channel
         for {
                 select {
+                // New line from logchannel (reader loop)
                 case newline := <-logchannel:
                         linecount++
                         // Parse line async
@@ -118,9 +119,9 @@ func parseline(newline string, skipfields []string) {
         dnsarr := gjson.Get(newline, "dns.answers").Array()
         // If len answers >0 iterate results
         if len(dnsarr) > 0 {
-
                 // Get time from JSON
                 timestring := gjson.Get(newline, "timestamp").String()
+                
                 // Parse time using string to match surricata logs
                 thetime, err := time.Parse("2006-01-02T15:04:05.99999-0700", timestring)
                 if err != nil {
@@ -142,15 +143,19 @@ func parseline(newline string, skipfields []string) {
                                 // Skip if type is to be skipped
                                 return
                         }
+                        // Get rrname and rdata
                         rrname := gjson.Get(element, "rrname").String()
                         rdata := gjson.Get(element, "rdata").String()
+                        
                         // Return if any len = 0 or rrname/rdata contains ,
                         if len(rrname) == 0 || len(rrtype) == 0 || len(rdata) == 0 || strings.Contains(rrname, ",") || strings.Contains(rdata, ",") {
                                 // Inc. errorcount if error
                                 errorcount++
                                 return
                         }
+                        
                         //DEBUG print fmt.Printf("%q,%q,%q,%v,%v,1\n", rrname, rdata, rrtype, timestamp, timestamp)
+                        // Build INSERT line
                         dboutline := fmt.Sprintf("'%s','%s','%s',%d,%d,1", rrname, rdata, rrtype, timestamp, timestamp)
                         // Send line to dbwriter
                         dbchan <- dboutline
@@ -188,10 +193,13 @@ func Abs(x int64) int64 {
 // Dbwriter, read lines from channel and do async inserts
 // 
 // Change db params if you use external db
+// TODO: move db params to arguments
 //
 func dbwriter(dbline chan string) {
         var (
+                // Setup contect
                 ctx       = context.Background()
+                // Make db connection
                 conn, err = clickhouse.Open(&clickhouse.Options{
                         Addr: []string{"127.0.0.1:9000"},
                         Auth: clickhouse.Auth{
@@ -210,6 +218,8 @@ func dbwriter(dbline chan string) {
         if err != nil {
                 log.Fatal(err)
         }
+        
+        // Blocking loop, wait for lines - do insert
         for {
                 // Wait for new lines, insert into DB
                 select {

@@ -41,6 +41,7 @@ func main() {
         // Make channel for loglines
         logchannel := make(chan string, 100)
 
+        // Read commandline params
         filename := *config_file
         skipfields := strings.Split(*config_skip, ",")
         
@@ -64,7 +65,7 @@ func main() {
                 }
         }()
 
-        // Start db writer
+        // Start dbwriter
         log.Printf("Started dbwriter\n")
         go dbwriter(dbchan)
 
@@ -197,11 +198,13 @@ func Abs(x int64) int64 {
 //
 func dbwriter(dbline chan string) {
         var (
-                // Setup contect
+                // Setup context
                 ctx       = context.Background()
                 // Make db connection
                 conn, err = clickhouse.Open(&clickhouse.Options{
+                        // Dbserver
                         Addr: []string{"127.0.0.1:9000"},
+                        // Dbauth
                         Auth: clickhouse.Auth{
                                 Database: "padde",
                                 Username: "default",
